@@ -1,4 +1,4 @@
-def find_possible_games():
+def find_possible_games() -> list[int]:
     with open("input.txt") as file:
         lines = file.readlines()
         possible_games = []
