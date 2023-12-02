@@ -1,5 +1,5 @@
 def main():
-    with open("../input.txt") as file:
+    with open("input.txt") as file:
         lines = file.readlines()
         all_numbers = list(map(find_numbers, lines))
         print(sum(all_numbers))
