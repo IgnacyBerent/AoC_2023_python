@@ -1,5 +1,6 @@
 import time
 
+
 def main():
     categories = []
     seeds_map = []
@@ -23,12 +24,12 @@ def main():
     seeds_ranges = give_seeds_ranges(seeds_map)
     categories.reverse()
 
-    total_seeds = 1_399_051_681
+    total_seeds = 37384987
     start_time = time.time()
-    for seed in range(total_seeds):
+    for seed in range(1, total_seeds):
         # for progress calculation
         current_time = time.time()
-        if current_time - start_time >= 60:  # check every 60s
+        if current_time - start_time >= 30:  # check every 60s
             progress = seed / total_seeds * 100
             print(f'Progress: {progress} %')
             start_time = current_time
@@ -40,14 +41,6 @@ def main():
             break
 
 
-def gen_lowest_location(hum_to_loc_map: list[list[int]]):
-    for i in range(len(hum_to_loc_map)):
-        final_loc = hum_to_loc_map[i][0]
-        final_lon_range = hum_to_loc_map[i][2]
-        for i in range(final_loc, final_loc + final_lon_range):
-            yield i
-
-
 def reverse_translate(cat_map: list[list[int]], number: int) -> int:
     for dest_start, source_start, range_ in cat_map:
         if dest_start <= number <= dest_start + range_:
@@ -55,16 +48,16 @@ def reverse_translate(cat_map: list[list[int]], number: int) -> int:
     return number
 
 
-def give_seeds_ranges(seeds_map: list[int]) -> list[list[int]]:
+def give_seeds_ranges(seeds_map: list[int]) -> list[tuple[int, int]]:
     seeds_ranges = []
     for i in range(0, len(seeds_map), 2):
-        seeds_ranges.append([seeds_map[i], seeds_map[i] + seeds_map[i + 1]])
+        seeds_ranges.append((seeds_map[i], seeds_map[i] + seeds_map[i + 1] - 1))
     return seeds_ranges
 
 
-def seed_in_range(loc: int, seed_ranges: list[list[int]]) -> bool:
+def seed_in_range(seed: int, seed_ranges: list[tuple[int, int]]) -> bool:
     for seed_range in seed_ranges:
-        if seed_range[0] <= loc <= seed_range[1]:
+        if seed_range[0] <= seed <= seed_range[1]:
             return True
     return False
 
