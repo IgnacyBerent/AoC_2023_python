@@ -10,13 +10,12 @@ def main():
             winning_scratch = [int(scratch) for scratch in winning_scratch.strip().split()]
             my_scratch = [int(card) for card in my_scratch.strip().split()]
             scratches_tuple = (winning_scratch, my_scratch)
-            list_of_cards.append((int(card_number), scratches_tuple))
-            cards_dict = {int(card_number): tuple for card_number, tuple in list_of_cards}
+            list_of_cards.append((int(card_number), calculate_matches(scratches_tuple)))
+            cards_dict = {int(card_number): matches for card_number, matches in list_of_cards}
 
         i = 0
         while i < len(list_of_cards):
-            card_number, scratches = list_of_cards[i]
-            matches = calculate_matches(scratches)
+            card_number, matches = list_of_cards[i]
             if matches == 0:
                 pass
             else:
