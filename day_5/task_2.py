@@ -4,7 +4,7 @@ def main():
     categories = []
     seeds_map = []
 
-    with open('input.txt', 'r') as file:
+    with open('example.txt', 'r') as file:
         lines = file.readlines()
         for i, line in enumerate(lines):
             if line == lines[0]:
@@ -71,3 +71,5 @@ def seed_in_range(loc: int, seed_ranges: list[list[int]]) -> bool:
 
 if __name__ == '__main__':
     main()
+
+# after try 1: soluton is under 37384987
