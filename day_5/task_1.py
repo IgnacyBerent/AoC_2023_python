@@ -25,11 +25,7 @@ def main():
 
 
 def translate(cat_map: list[list[int]], number: int) -> int:
-    dest_starts = [line[0] for line in cat_map]
-    source_starts = [line[1] for line in cat_map]
-    ranges = [line[2] for line in cat_map]
-
-    for dest_start, source_start, range_ in zip(dest_starts, source_starts, ranges):
+    for dest_start, source_start, range_ in cat_map:
         if source_start <= number <= source_start + range_:
             return dest_start + (number - source_start)
     return number

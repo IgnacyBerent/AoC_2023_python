@@ -1,11 +1,8 @@
-import time
-
-
 def main():
     categories = []
     seeds_map = []
 
-    with open('example.txt', 'r') as file:
+    with open('input.txt', 'r') as file:
         lines = file.readlines()
         for i, line in enumerate(lines):
             if line == lines[0]:
@@ -24,15 +21,8 @@ def main():
     seeds_ranges = give_seeds_ranges(seeds_map)
     categories.reverse()
 
-    total_seeds = 37384987
-    start_time = time.time()
+    total_seeds = 318728750  # result from task one, so this must be smaller
     for seed in range(1, total_seeds):
-        # for progress calculation
-        current_time = time.time()
-        if current_time - start_time >= 30:  # check every 60s
-            progress = seed / total_seeds * 100
-            print(f'Progress: {progress} %')
-            start_time = current_time
         loc = seed
         for category in categories:
             seed = reverse_translate(category, seed)
@@ -65,4 +55,9 @@ def seed_in_range(seed: int, seed_ranges: list[tuple[int, int]]) -> bool:
 if __name__ == '__main__':
     main()
 
-# after try 1: soluton is under 37384987
+""" 
+I don't know why it gives anwser bigger by 1 than real solution on webstie.
+Maybe it's due to their bug
+My solution: 37384987
+Solution on website: 37384986
+"""
