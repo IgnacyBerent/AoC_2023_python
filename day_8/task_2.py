@@ -1,9 +1,14 @@
+import math
+from functools import reduce
+
 instructions = ''
 maps = {}
+endpoint_maps = {}
+endpoint_z_maps = {}
 
 
 def main():
-    global maps, instructions
+    global maps, instructions, endpoint_maps, endpoint_z_maps
     with open('input.txt', 'r') as file:
         lines = file.readlines()
         for i, line in enumerate(lines):
@@ -15,41 +20,86 @@ def main():
                 maps[current_pos] = directions
         instructions = instructions.strip()
 
-        print(simul_run_steps_to_endpoint())
+    for pos in maps:
+        endpoint_maps[pos] = find_pos_after_instructions(pos)
+
+    map_z_to_z()
+    print(endpoint_z_maps)
+
+    all_starting_positions = list(filter(lambda pos: pos[-1] == 'A', maps))
+    # for start_pos in all_starting_positions:
+    #    end_pos, steps = find_z(start_pos)
+    #    print(end_pos, steps)
+    """
+    It turns out that to every start A point is unique end Z point,
+    number of starts is equal to endpoints, and number of steps it takes
+    to get to given Z point is actually the same number of given Z point to
+    get to closest Z point which is actually the same Z point
+    """
+
+    to_z_steps = [x[1] for x in list(endpoint_z_maps.values())]
+    print(lcm_list(to_z_steps))
 
 
-def find_z(start_pos, current_steps) -> tuple[str, int]:
+def find_pos_after_instructions(pos: str) -> tuple[str, int]:
     global maps, instructions
     for i, instruction in enumerate(instructions):
         if instruction == 'L':
-            start_pos = maps[start_pos][0]
+            pos = maps[pos][0]
         elif instruction == 'R':
-            start_pos = maps[start_pos][1]
-        if start_pos[-1] == 'Z':
-            return start_pos, i + 1 + current_steps
-    return start_pos, len(instructions)+current_steps
+            pos = maps[pos][1]
+        if pos[-1] == 'Z':
+            return pos, i + 1
+
+    return pos, len(instructions)
 
 
-
-
-def simul_run_steps_to_endpoint() -> int:
-    all_starting_positions = list(filter(lambda pos: pos[-1] == 'A', maps))
-    all_starts_steps = [0] * len(all_starting_positions)
-
+def find_z(start: str) -> tuple[str, int]:
+    """
+    number of steps to get to any z endpoint
+    from given starting position
+    :param start: a starting position
+    :return: z endpoint, number of steps to get to it
+    """
+    global endpoint_maps
+    curr = start
+    all_steps = 0
     while True:
-        for i, start in enumerate(all_starting_positions):
-            if any(
-                    current_step > all_starts_steps[i]
-                    or all(steps == all_starts_steps[i] for steps in all_starts_steps)
-                    for current_step in all_starts_steps
-            ):
-                all_starting_positions[i], all_starts_steps[i] = find_z(start, all_starts_steps[i])
-                if all(
-                        start[-1] == 'Z' and all_starts_steps[i] == steps
-                        for start, steps
-                        in zip(all_starting_positions, all_starts_steps)
-                ):
-                    return all_starts_steps[0]
+        curr, steps = endpoint_maps[curr]
+        all_steps += steps
+        if curr[-1] == 'Z':
+            return curr, all_steps
+
+
+def map_z_to_z():
+    """
+    makes global dictionary of number of steps
+    that takes to get from one z endpoint to another
+    """
+    global endpoint_z_maps
+    all_z_endpoints = list(filter(lambda pos: pos[-1] == 'Z', maps))
+    for z_endpoint in all_z_endpoints:
+        end_z, steps = find_z(z_endpoint)
+        endpoint_z_maps[z_endpoint] = (end_z, steps)
+
+
+def lcm(a: int, b: int) -> int:
+    """
+    Calculates least common multiple of two numbers
+    :param a: number 1
+    :param b: number 2
+    :return: least common multiple of a and b
+    """
+    return abs(a * b) // math.gcd(a, b)
+
+
+def lcm_list(numbers: list[int]) -> int:
+    """
+    Calculates least common multiple of list of numbers
+    :param numbers: list of numbers
+    :return: the least common multiple
+    """
+    return reduce(lcm, numbers)
 
 
 if __name__ == '__main__':
