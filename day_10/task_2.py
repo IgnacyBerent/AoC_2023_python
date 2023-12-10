@@ -91,12 +91,10 @@ def find_loop_cords(start, curr_dir) -> list[tuple[int, int]] | None:
             return loop_cords
         if antagonist_dir[curr_dir] not in pipes[area[x][y]]:
             return None
-        else:
-            curr_dir = pipes[area[x][y]][0] if pipes[area[x][y]][0] != antagonist_dir[curr_dir] else pipes[area[x][y]][
-                1]
-            x += directions[curr_dir][0]
-            y += directions[curr_dir][1]
-            loop_cords.append((x, y))
+        curr_dir = pipes[area[x][y]][0] if pipes[area[x][y]][0] != antagonist_dir[curr_dir] else pipes[area[x][y]][1]
+        x += directions[curr_dir][0]
+        y += directions[curr_dir][1]
+        loop_cords.append((x, y))
 
 
 if __name__ == '__main__':

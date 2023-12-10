@@ -63,11 +63,10 @@ def find_loop_len(start, curr_dir) -> int | None:
             return steps
         if antagonist_dir[curr_dir] not in pipes[area[x][y]]:
             return None
-        else:
-            curr_dir = pipes[area[x][y]][0] if pipes[area[x][y]][0] != antagonist_dir[curr_dir] else pipes[area[x][y]][1]
-            x += directions[curr_dir][0]
-            y += directions[curr_dir][1]
-            steps += 1
+        curr_dir = pipes[area[x][y]][0] if pipes[area[x][y]][0] != antagonist_dir[curr_dir] else pipes[area[x][y]][1]
+        x += directions[curr_dir][0]
+        y += directions[curr_dir][1]
+        steps += 1
 
 
 if __name__ == '__main__':
