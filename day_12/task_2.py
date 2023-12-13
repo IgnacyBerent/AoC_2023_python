@@ -52,8 +52,8 @@ def calculate_poss_r(record: str, nums: list[int], total_hashes, used_h=0, place
         if char != '.':
             place_left -= 1
             if not nums[1:]:
-                if all(x != '.' for x in record[i:i+curr_num]):
-                    if used_h + record[i:i+curr_num].count('#') == t_hashes and len(record[i:i+curr_num]) == curr_num:
+                if len(record[i:i+curr_num]) == curr_num and all(x != '.' for x in record[i:i+curr_num]):
+                    if used_h + record[i:i+curr_num].count('#') == t_hashes:
                         possib += 1
             else:
                 if i == 0:
