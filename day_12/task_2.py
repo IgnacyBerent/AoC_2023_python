@@ -78,8 +78,10 @@ def calculate_poss_r(record: str, nums: list[int], total_hashes, used_h=0) -> in
         return possib
     else:
         nums = tuple(list(nums)[1:])
-        return sum([calculate_poss_r(record[shift:], nums, t_hashes, hashes + used_h, place_left) for shift, hashes in
-                    zip(shifts, u_hashes)])
+        return sum(
+            [calculate_poss_r(record=record[shift:], nums=nums, total_hashes=t_hashes, used_h=hashes + used_h) for
+             shift, hashes in
+             zip(shifts, u_hashes)])
 
 
 if __name__ == '__main__':
