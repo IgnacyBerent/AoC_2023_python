@@ -21,10 +21,10 @@ class Hand:
         """
         Calculates strength of hand
         """
-        strenght = 0
+        strength = 0
         for i, card in enumerate(self._cards):
-            strenght += card_strengths[card] * (14 ** (4 - i))
-        return strenght
+            strength += card_strengths[card] * (14 ** (4 - i))
+        return strength
 
     def determine_type(self) -> int:
         """
