@@ -1,13 +1,12 @@
 from collections import Counter
 from itertools import chain
-from task_1 import determine_type
+from task_1 import determine_type, calculate_strength
 
 card_strengths = {'A': 14, 'K': 13, 'Q': 12, 'T': 10, '9': 9,
                   '8': 8, '7': 7, '6': 6, '5': 5, '4': 4, '3': 3, '2': 2, 'J': 1}
 
 
 def main():
-    # instead make dictionary with value as a key and list of hands as a value
     hand_to_bid = {}
     types_lists = {7: [], 6: [], 5: [], 4: [], 3: [], 2: [], 1: []}
     with open('input.txt', 'r') as file:
@@ -16,13 +15,13 @@ def main():
             hand, bid = line.split()
             hand_to_bid[hand] = int(bid)
             if 'J' in hand:
-                type = determine_type_j(hand)
+                hand_type = determine_type_j(hand)
             else:
-                type = determine_type(hand)
-            types_lists[type].append(hand)
+                hand_type = determine_type(hand)
+            types_lists[hand_type].append(hand)
 
     for key, value in types_lists.items():
-        types_lists[key] = sorted(value, key=lambda x: calculate_strenght(x), reverse=True)
+        types_lists[key] = sorted(value, key=lambda x: calculate_strength(x), reverse=True)
 
     all_cards_sorted = list(chain.from_iterable(types_lists.values()))
     all_cards_sorted.reverse()
@@ -61,16 +60,6 @@ def determine_type_j(cards: str) -> int:
             return 4
     else:  # One pair
         return 2
-
-
-def calculate_strenght(cards: str) -> int:
-    """
-    treats cards like number system with base 14
-    """
-    strenght = 0
-    for i, card in enumerate(cards):
-        strenght += card_strengths[card] * (14 ** (4 - i))
-    return strenght
 
 
 if __name__ == '__main__':

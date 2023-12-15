@@ -6,7 +6,6 @@ card_strengths = {'A': 14, 'K': 13, 'Q': 12, 'J': 11, 'T': 10, '9': 9,
 
 
 def main():
-    # instead make dictionary with value as a key and list of hands as a value
     hand_to_bid = {}
     types_lists = {7: [], 6: [], 5: [], 4: [], 3: [], 2: [], 1: []}
     with open('input.txt', 'r') as file:
@@ -17,7 +16,7 @@ def main():
             types_lists[determine_type(hand)].append(hand)
 
     for key, value in types_lists.items():
-        types_lists[key] = sorted(value, key=lambda x: calculate_strenght(x), reverse=True)
+        types_lists[key] = sorted(value, key=lambda x: calculate_strength(x), reverse=True)
 
     all_cards_sorted = list(chain.from_iterable(types_lists.values()))
     all_cards_sorted.reverse()
@@ -28,6 +27,11 @@ def main():
 
 
 def determine_type(cards: str) -> int:
+    """
+    Determines type of hand
+    :param cards: cards in hand
+    :return: value of type where 7 is the best and 1 is the worst
+    """
     cards = list(cards)
     cards_collection = Counter(cards)
     if len(cards_collection) == 1:  # Five of a kind
@@ -48,14 +52,16 @@ def determine_type(cards: str) -> int:
         return 1
 
 
-def calculate_strenght(cards:str) -> int:
+def calculate_strength(cards: str) -> int:
     """
-    return true if card_1 is stronger than card_2
+    Calculates strength of hand treating cards like number system with base 14
+    :param cards: cards in hand
+    :return: strength of hand
     """
-    strenght = 0
+    strength = 0
     for i, card in enumerate(cards):
-        strenght += card_strengths[card] * (14 ** (4 - i))
-    return strenght
+        strength += card_strengths[card] * (14 ** (4 - i))
+    return strength
 
 
 if __name__ == '__main__':
