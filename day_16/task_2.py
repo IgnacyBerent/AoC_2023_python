@@ -1,26 +1,5 @@
 from task_1 import beam_simulator
 
-directions = {
-    'u': (-1, 0),
-    'r': (0, 1),
-    'd': (1, 0),
-    'l': (0, -1)
-}
-# \
-back_slash_turns = {
-    'u': 'l',
-    'r': 'd',
-    'd': 'r',
-    'l': 'u'
-}
-# /
-forward_slash_turns = {
-    'u': 'r',
-    'r': 'u',
-    'd': 'l',
-    'l': 'd'
-}
-
 
 def main():
     with open('input.txt', 'r') as file:
