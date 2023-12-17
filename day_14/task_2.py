@@ -5,16 +5,26 @@ def main():
     with open('input.txt', 'r') as file:
         data_platform = file.readlines()
     data_platform = tuple(tuple(line.strip()) for line in data_platform)
-    results = []
-    for j in range(10):
-        for i in range(8_000):
-            data_platform = cycle(data_platform)
+
+    seen = {}
+    results = [0]
+    for i in range(1, 1_000_000_000):
+        data_platform = cycle(data_platform)
+        state = ''.join(''.join(line) for line in data_platform)
+
         results.append(calc_weight(data_platform))
-    results_set = set(results)
-    print(results_set)
-    print(len(results_set))
-    final_weight = list(results)[1_000_000_000 % ((len(results_set))-1)]
-    print(final_weight)
+
+        if state in seen:
+            # break if already have reached that state
+            break
+        seen[state] = i
+
+    rep_len = i - seen[state]
+    pos_first_rep = seen[state]
+
+    # number of tilting cycles
+    cycles = pos_first_rep + (1_000_000_000 - pos_first_rep) % rep_len
+    print(results[cycles])
 
 
 @lru_cache(maxsize=None)
@@ -62,9 +72,3 @@ def calc_weight(data_platform: tuple[tuple[str]]) -> int:
 
 if __name__ == '__main__':
     main()
-
-"""
-We can see that results are starts repeating every 1000 cycles.
-Unfortunately I dont know why modulo solution doesnt give right answer.
-So I guessed answer from the set list
-"""
