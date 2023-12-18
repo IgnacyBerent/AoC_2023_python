@@ -1,5 +1,3 @@
-from collections import defaultdict
-
 directions = {
     "U": (-1, 0),
     "D": (1, 0),
@@ -7,37 +5,39 @@ directions = {
     "R": (0, 1),
 }
 
-grid = defaultdict(lambda: defaultdict(lambda: 0))
+
+def area(points: list[tuple[int, int]]) -> int:
+    """Shoelace formula"""
+    result = 0
+    for i in range(len(points) - 1):
+        y1, x1 = points[i]
+        y2, x2 = points[i + 1]
+        result += x1 * y2 - x2 * y1
+
+    return abs(result) // 2
 
 
 def main():
     with open("input.txt", 'r') as file:
         lines = file.readlines()
 
+    points = []
     curr_pos = (0, 0)
 
     for line in lines:
-        direction, length, color = line.strip().split()
-        color = color[2:-1]
+        direction, length, _ = line.strip().split()
         for _ in range(int(length)):
             curr_pos = tuple(map(sum, zip(curr_pos, directions[direction])))
-            grid[curr_pos[0]][curr_pos[1]] = color
+            points.append(curr_pos)
 
-    total = 0
-
-    for y in range(max(grid.keys())+1):
-        count = False
-        if grid[y]:
-            for x in range(max(grid[y].keys())+1):
-                if grid[y][x] != 0:
-                    total += 1
-                    if ((grid[y + 1][x] != 0 and grid[y - 1][x] != 0)  # |
-                            or (grid[y + 1][x] != 0 and grid[y][x + 1] != 0)  # F
-                            or (grid[y + 1][x] != 0 and grid[y][x - 1] != 0)):  # 7
-                        count = not count
-                elif count:
-                    total += 1
-    print(total)
+    # we use Pick's theorem to calculate number of interior points
+    # A = i + b/2 - 1
+    # where
+    # A is area of polygon,
+    # i is number of interior points,
+    # b is number of boundary points
+    # i + b = A - b/2 + 1
+    print(area(points) + len(points) // 2 + 1)
 
 
 if __name__ == "__main__":
