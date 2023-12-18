@@ -7,7 +7,12 @@ directions = {
 
 
 def area(points: list[tuple[int, int]]) -> int:
-    """Shoelace formula"""
+    """
+    Shoelace formula
+    :param points: list of points
+    :return: area of polygon
+    """
+
     result = 0
     for i in range(len(points) - 1):
         y1, x1 = points[i]
