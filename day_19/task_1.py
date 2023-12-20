@@ -1,9 +1,19 @@
-def main():
-    workflows_objects = {}
+def compare(a: int, symbol: str, b: int):
+    if symbol == '>':
+        return a > b
+    elif symbol == '<':
+        return a < b
+    elif symbol == '=':
+        return a == b
 
-    with open('example.txt', 'r') as file:
+
+def main():
+    with open('input.txt', 'r') as file:
         lines = file.readlines()
-    workflows = []
+
+    accepted = 0
+
+    workflows = {}
     parts = []
     second_group = False
     for line in lines:
@@ -11,34 +21,61 @@ def main():
             second_group = True
             continue
         if second_group:
-            parts.append(line.strip()[1:-1])
+            part_dict = {}
+            for part in line.strip()[1:-1].split(','):
+                key, value = part.split('=')
+                part_dict[key] = int(value)
+            parts.append(part_dict)
         else:
-            workflows.append(line.strip())
+            name, instructions = line.strip().split('{')
+            instructions = instructions[:-1]
+            instr = []
+            for ins in instructions.split(','):
+                try:
+                    condition, next_wf = ins.split(':')
+                    instr.append((condition, next_wf))
+                except ValueError:
+                    instr.append((None, ins))
+            workflows[name] = instr
 
-    for wrk in workflows:
-        workflows_objects[wrk.split('{')[0]] = Workflow(wrk.split('{')[1])
-
-    parts_dicts = []
     for part in parts:
-        part_dict = {}
-        for p in part.split(','):
-            key, value = p.split('=')
-            part_dict[key] = value
-        parts_dicts.append(part_dict)
-    
+        instructions = workflows['in']
+        i = 0
+        while True:
+            instr = instructions[i]
+            if instr[0] is not None:
+                cat = ''
+                symb = ''
+                num = ''
+                for char in instr[0]:
+                    if char.isalpha():
+                        cat = char
+                    elif char.isdigit():
+                        num += char
+                    else:
+                        symb = char
+                if compare(part[cat], symb, int(num)):
+                    if instr[1] == 'A':
+                        accepted += sum([x for x in part.values()])
+                        break
+                    elif instr[1] == 'R':
+                        break
+                    else:
+                        instructions = workflows[instr[1]]
+                        i = 0
+                else:
+                    i += 1
+            else:
+                if instr[1] == 'A':
+                    accepted += sum([x for x in part.values()])
+                    break
+                elif instr[1] == 'R':
+                    break
+                else:
+                    instructions = workflows[instr[1]]
+                    i = 0
 
-
-class Workflow:
-    def __init__(self, instructions):
-        instructions = instructions[:-1]
-        self.instructions = []
-        for ins in instructions.split(','):
-            try:
-                condition, next_wf = ins.split(':')
-                self.instructions.append((condition, next_wf))
-            except ValueError:
-                self.instructions.append((None, ins))
-
+    print(accepted)
 
 
 if __name__ == "__main__":
