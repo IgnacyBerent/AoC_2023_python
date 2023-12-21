@@ -1,7 +1,7 @@
 from collections import deque
 
 dirs = [(-1, 0), (1, 0), (0, 1), (0, -1)]
-STEPS = 6
+STEPS = 64
 
 
 def main(file: str):
@@ -29,24 +29,23 @@ def main(file: str):
 
     while curr_positions:
         step, curr_pos = curr_positions.popleft()
-        if step == STEPS:
-            final.add(curr_pos)
-            continue
+        if step > STEPS:
+            break
         if curr_pos not in visited:
-            new_poses = []
+            visited.add(curr_pos)
+            if step % 2 == 0:
+                final.add(curr_pos)
             for dir in dirs:
                 new_pos = (curr_pos[0] + dir[0], curr_pos[1] + dir[1])
-                # if not out of grid boundaries:
-                if (0 <= new_pos[0] < len(lines) and 0 <= new_pos[1] < len(lines[0]) and new_pos not in rocks_cords):
-                    if new_pos not in visited:
-                        curr_positions.append((step + 1, new_pos))
-                        visited.add(new_pos)
-                        new_poses.append(new_pos)
-                        if step % 2 == 0:
-                            final.add(new_pos)
+                if (0 <= new_pos[0] < len(lines) and 0 <= new_pos[1] < len(lines[0])
+                        and new_pos not in rocks_cords
+                        and new_pos not in visited):
+                    curr_positions.append((step + 1, new_pos))
+
+
 
     print(len(final))
 
 
 if __name__ == '__main__':
-    main('example.txt')
+    main('input.txt')
