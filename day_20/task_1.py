@@ -56,41 +56,22 @@ def press_button():
         if signal is not None:
             if isinstance(receiver, FlipFlop):
                 receiver.receive(signal)
-                new_signal = receiver.send()
-                if new_signal is not None:
-                    for output in receiver.outputs:
-                        try:
-                            new_receiver = modules[output]
-                        except KeyError:
-                            new_receiver = output
+            new_signal = receiver.send()
+            if new_signal is not None:
+                for output in receiver.outputs:
+                    try:
+                        new_receiver = modules[output]
+                    except KeyError:
+                        new_receiver = output
+                    else:
+                        pq.put((order + 1, counter, new_receiver, new_signal))
+                        counter += 1
+                    finally:
+                        # print(f'{receiver} -{new_signal}-> {new_receiver}')
+                        if new_signal == 'low':
+                            send_lows += 1
                         else:
-                            pq.put((order + 1, counter, new_receiver, new_signal))
-                            counter += 1
-                        finally:
-                            # print(f'{receiver} -{new_signal}-> {new_receiver}')
-                            if new_signal == 'low':
-                                send_lows += 1
-                            else:
-                                send_highs += 1
-
-            elif isinstance(receiver, Conjunction):
-                new_signal = receiver.send()
-                if new_signal is not None:
-                    for output in receiver.outputs:
-                        try:
-                            new_receiver = modules[output]
-                        except KeyError:
-                            new_receiver = output
-                        else:
-                            pq.put((order + 1, counter, new_receiver, new_signal))
-                            counter += 1
-                        finally:
-                            # print(f'{receiver} -{new_signal}-> {new_receiver}')
-                            if new_signal == 'low':
-                                send_lows += 1
-                            else:
-                                send_highs += 1
-
+                            send_highs += 1
     return send_lows, send_highs
 
 

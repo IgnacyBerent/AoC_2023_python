@@ -58,37 +58,20 @@ def press_button(dd_inputs: list[str]):
         if signal is not None:
             if isinstance(receiver, FlipFlop):
                 receiver.receive(signal)
-                new_signal = receiver.send()
-                if new_signal is not None:
-                    for output in receiver.outputs:
-                        try:
-                            new_receiver = modules[output]
-                        except KeyError:
-                            pass
-                        else:
-                            pq.put((order + 1, counter, new_receiver, new_signal))
-                            counter += 1
-                        finally:
-                            if receiver.name in dd_inputs and new_signal == 'high':
-                                if dd_inputs_dict[receiver.name] == 0:
-                                    return receiver.name
-
-            elif isinstance(receiver, Conjunction):
-                new_signal = receiver.send()
-                if new_signal is not None:
-                    for output in receiver.outputs:
-                        try:
-                            new_receiver = modules[output]
-                        except KeyError:
-                            pass
-                        else:
-                            pq.put((order + 1, counter, new_receiver, new_signal))
-                            counter += 1
-                        finally:
-                            if receiver.name in dd_inputs and new_signal == 'high':
-                                if dd_inputs_dict[receiver.name] == 0:
-                                    return receiver.name
-
+            new_signal = receiver.send()
+            if new_signal is not None:
+                for output in receiver.outputs:
+                    try:
+                        new_receiver = modules[output]
+                    except KeyError:
+                        pass
+                    else:
+                        pq.put((order + 1, counter, new_receiver, new_signal))
+                        counter += 1
+                    finally:
+                        if receiver.name in dd_inputs and new_signal == 'high':
+                            if dd_inputs_dict[receiver.name] == 0:
+                                return receiver.name
     return None
 
 
