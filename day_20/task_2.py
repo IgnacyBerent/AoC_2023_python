@@ -1,3 +1,5 @@
+import math
+from collections import defaultdict
 from queue import PriorityQueue
 
 from Broadcaster import Broadcaster
@@ -6,6 +8,7 @@ from FlipFlop import FlipFlop
 
 modules = {}
 broadcaster = Broadcaster()
+dd_inputs_dict = defaultdict(int)
 
 
 def main(file: str):
@@ -27,29 +30,28 @@ def main(file: str):
             if conjunctor.name in module.outputs:
                 conjunctor.register_input(module)
 
-    send_l = 0
-    send_h = 0
-    for i in range(1000):
-        l, h = press_button()
-        send_l += l
-        send_h += h
+    presses = 0
+    dd_inputs = [module.name for module in modules['dd'].inputs]
+    while True:
+        presses += 1
+        found_receiver = press_button(dd_inputs)
+        if found_receiver is not None:
+            dd_inputs_dict[found_receiver] = presses
+        if all([val != 0 for val in [dd_inputs_dict[dd_input] for dd_input in dd_inputs]]):
+            break
 
-    print(send_l * send_h)
+    results = [dd_inputs_dict[dd_input] for dd_input in dd_inputs]
+    print(lcm(results))
 
 
-def press_button():
-    global broadcaster, modules
+def press_button(dd_inputs: list[str]):
+    global broadcaster, modules, dd_inputs_dict
     pq = PriorityQueue()
-    send_lows = 1
-    send_highs = 0
     counter = 0
-    # print(f'button -low-> broadcaster')
     for output in broadcaster.outputs:
         receiver = modules[output]
-        send_lows += 1
         pq.put((1, counter, receiver, 'low'))
         counter += 1
-        # print(f'broadcaster -low-> {receiver}')
 
     while not pq.empty():
         order, _, receiver, signal = pq.get()
@@ -62,16 +64,14 @@ def press_button():
                         try:
                             new_receiver = modules[output]
                         except KeyError:
-                            new_receiver = output
+                            pass
                         else:
                             pq.put((order + 1, counter, new_receiver, new_signal))
                             counter += 1
                         finally:
-                            # print(f'{receiver} -{new_signal}-> {new_receiver}')
-                            if new_signal == 'low':
-                                send_lows += 1
-                            else:
-                                send_highs += 1
+                            if receiver.name in dd_inputs and new_signal == 'high':
+                                if dd_inputs_dict[receiver.name] == 0:
+                                    return receiver.name
 
             elif isinstance(receiver, Conjunction):
                 new_signal = receiver.send()
@@ -80,18 +80,23 @@ def press_button():
                         try:
                             new_receiver = modules[output]
                         except KeyError:
-                            new_receiver = output
+                            pass
                         else:
                             pq.put((order + 1, counter, new_receiver, new_signal))
                             counter += 1
                         finally:
-                            # print(f'{receiver} -{new_signal}-> {new_receiver}')
-                            if new_signal == 'low':
-                                send_lows += 1
-                            else:
-                                send_highs += 1
+                            if receiver.name in dd_inputs and new_signal == 'high':
+                                if dd_inputs_dict[receiver.name] == 0:
+                                    return receiver.name
 
-    return send_lows, send_highs
+    return None
+
+
+def lcm(numbers):
+    lcm_value = numbers[0]
+    for i in numbers[1:]:
+        lcm_value = lcm_value * i // math.gcd(lcm_value, i)
+    return lcm_value
 
 
 if __name__ == '__main__':
