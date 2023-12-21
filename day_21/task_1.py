@@ -42,8 +42,6 @@ def main(file: str):
                         and new_pos not in visited):
                     curr_positions.append((step + 1, new_pos))
 
-
-
     print(len(final))
 
 
