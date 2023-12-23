@@ -38,8 +38,19 @@ def main(file: str):
             ]
         ]
     bricks.sort()
+    bricks = fall_bricks(bricks)
+    bricks = find_holds(bricks)
 
-    # simulates falling of bricks
+    result = 0
+    for brick in bricks:
+        if brick.holds == set() or all(len(held.held_by) > 1 for held in brick.holds):
+            result += 1
+
+    print(result)
+
+
+def fall_bricks(data_bricks):
+    bricks = data_bricks.copy()
     for brick in bricks:
         if brick.sx != brick.ex:
             platform_height = max([platform[x][brick.sy] for x in range(brick.sx, brick.ex + 1)])
@@ -58,7 +69,9 @@ def main(file: str):
             brick.sz = platform[brick.sx][brick.sy] + 1
             brick.ez = brick.sz + brick_height
             platform[brick.sx][brick.sy] += brick_height + 1
+    return bricks
 
+def find_holds(bricks):
     for brick in bricks:
         if brick.sx != brick.ex:
             # find all bricks over the brick
@@ -87,13 +100,7 @@ def main(file: str):
                     brick.holds.add(other_brick)
                     other_brick.held_by.add(brick)
                     break
-    result = 0
-    for brick in bricks:
-        if brick.holds == set() or all(len(held.held_by) > 1 for held in brick.holds):
-            result += 1
-
-    print(result)
-
+    return bricks
 
 if __name__ == '__main__':
     main('input.txt')
