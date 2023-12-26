@@ -4,8 +4,10 @@ from collections import defaultdict, deque
 def main(file: str):
     components_map = defaultdict(set)
 
+    # reading data
     with open(file) as f:
         data = f.readlines()
+    # mapping components to components
     for line in data:
         l, r = line.strip().split(': ')
         r = r.split(' ')
@@ -18,8 +20,7 @@ def main(file: str):
 
     first_comp = list(components_map.keys())[0]
 
-    for i, component in enumerate(list(components_map.keys())[1:]):
-        print(i)
+    for component in list(components_map.keys())[1:]:
         connections = 0
         used_components = {first_comp}
         # finds shortest path for considered component
@@ -28,20 +29,21 @@ def main(file: str):
             if s_component == component:
                 connections += 1
                 continue
+            qed = set()
             q = deque()
-            q.append((s_component, [s_component], 0))
+            q.append((s_component, [s_component]))
             found = False
             while q and not found and connections < 4:
-                comp, path, steps = q.popleft()
+                comp, path = q.popleft()
                 for c in components_map[comp]:
-                    if c not in path and c not in used_components:
-                        if component == c:
-                            connections += 1
-                            used_components.update(path)
-                            found = True
-                            break
-                        elif steps < 20:
-                            q.append([c, path + [c], steps + 1])
+                    if component == c:
+                        connections += 1
+                        used_components.update(path)
+                        found = True
+                        break
+                    elif c not in qed and c not in path and c not in used_components:
+                        q.append([c, path + [c]])
+                        qed.add(c)
         # If it finds more than 3 unique ways to get to given component then it is in group 1
         if connections >= 4:
             group_1 += 1
