@@ -11,7 +11,7 @@ def main():
             my_scratch = [int(card) for card in my_scratch.strip().split()]
             scratches_tuple = (winning_scratch, my_scratch)
             list_of_cards.append((int(card_number), calculate_matches(scratches_tuple)))
-            cards_dict = {int(card_number): matches for card_number, matches in list_of_cards}
+        cards_dict = {int(card_number): matches for card_number, matches in list_of_cards}
 
         i = 0
         while i < len(list_of_cards):
